@@ -1,16 +1,21 @@
+const arr = [];
+
 const loadProducts = (url) => {
    fetch(url)
       .then((res) => res.json())
-      .then((data) => showProducts(data));
+      .then((data) => {
+         arr.push(data);
+         showProducts(data);
+      });
 };
 
 loadProducts('https://fakestoreapi.com/products');
 
 // show all product in UI
 const showProducts = (products) => {
-   console.log(products);
 
    setInnerText('total_products', products.length);
+   document.getElementById("all-products").innerHTML = "";
 
    const allProducts = products.map((pd) => pd);
    for (const product of allProducts) {
@@ -57,8 +62,6 @@ const showProductDetailsInModal = (product_details) => {
    setInnerText('product_id', product_details.id);
    setInnerText('modal_body', product_details.description);
    setInnerText('rating', product_details.rating.rate);
-
-   
 };
 
 const getInputValue = (id) => {
@@ -108,4 +111,12 @@ const updateTotal = () => {
       getInputValue('total-tax');
    document.getElementById('total').innerText = grandTotal.toFixed(2); // ! toFixed(2) is used to show 2 decimal places
 };
-loadProducts();
+
+// search by category
+document.getElementById('search-btn').addEventListener('click', function () {
+   const inputField = document.getElementById('input-value').value;
+   const searchedProduct = arr[0].filter((p) =>
+      p.category.startsWith(`${inputField}`)
+   );
+   showProducts(searchedProduct);
+});
